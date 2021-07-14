@@ -1,8 +1,7 @@
 #!/bin/bash
 PROJECT="TrackIncrementalTrainingSteps"
 
-if [ $# -lt 1];
-then
+if [ $# -lt 1 ]; then
     printf "Usage: $0 <operation> <options>\n"
     printf "Operations:\n"
     printf "\tactivate <-f to force recreation of venv>\n"
@@ -15,6 +14,8 @@ then
     printf "\t. ./letsDevelop.sh\n\n"
     exit
 fi
+
+export FLASK_APP=tits.py
 
 if [ $1 == "activate" ]; then
     if [ "$2" == "-f" ]; then
