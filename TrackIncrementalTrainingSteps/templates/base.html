@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - Track Incremental Training Steps (TITS)</title>
+        {% else %}
+        <title>Welcome - Track Incremental Training Steps (TITS)</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>TITS: <a href="/index">Home</a></div>
+        <hr>
+        {% block content %}{% endblock %}
+    </body>
+</html>
