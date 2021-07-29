@@ -1,7 +1,12 @@
 from datetime import datetime
-from TrackIncrementalTrainingSteps import db
 
-class User(db.Model):
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from TrackIncrementalTrainingSteps import db, login
+
+
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -10,6 +15,12 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password_hash(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Workout(db.Model):
@@ -35,4 +46,10 @@ class Set(db.Model):
     workout_id = db.Column(db.Integer, db.ForeignKey("workout.id"))
     
     def __repr__(self):
-        return f"{self.timestamp}\n{self.exercise} {self.weight} x {self.repetitions}\nNotes:\n{self.notes}\nRPE:\n{self.rate_of_perceived_exertion}\nRIR:\n{self.reps_in_reserve}"
+        return (f"{self.timestamp}\n{self.exercise} {self.weight} x {self.repetitions}\nNotes:\n"
+            + f"{self.notes}\nRPE:\n{self.rate_of_perceived_exertion}\nRIR:\n{self.reps_in_reserve}")
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get((int(id)))
