@@ -1,8 +1,8 @@
-"""empty message
+"""add user workout set
 
-Revision ID: afc14bfe5788
-Revises: 4e8062a270cc
-Create Date: 2021-07-24 20:59:31.721772
+Revision ID: b6fb7f84009b
+Revises: 
+Create Date: 2021-07-29 01:57:36.590367
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'afc14bfe5788'
-down_revision = '4e8062a270cc'
+revision = 'b6fb7f84009b'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -27,6 +27,15 @@ def upgrade():
     )
     op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
     op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=True)
+    op.create_table('workout',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('timestamp', sa.DateTime(), nullable=True),
+    sa.Column('rest_period', sa.Time(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_workout_timestamp'), 'workout', ['timestamp'], unique=False)
     op.create_table('set',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
@@ -36,8 +45,8 @@ def upgrade():
     sa.Column('rate_of_perceived_exertion', sa.Integer(), nullable=True),
     sa.Column('reps_in_reserve', sa.Integer(), nullable=True),
     sa.Column('notes', sa.String(length=255), nullable=True),
-    sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.Column('workout_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['workout_id'], ['workout.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_set_exercise'), 'set', ['exercise'], unique=False)
@@ -50,6 +59,8 @@ def downgrade():
     op.drop_index(op.f('ix_set_timestamp'), table_name='set')
     op.drop_index(op.f('ix_set_exercise'), table_name='set')
     op.drop_table('set')
+    op.drop_index(op.f('ix_workout_timestamp'), table_name='workout')
+    op.drop_table('workout')
     op.drop_index(op.f('ix_user_username'), table_name='user')
     op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table('user')
